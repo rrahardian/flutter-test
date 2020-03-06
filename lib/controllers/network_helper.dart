@@ -10,13 +10,13 @@ class GetEmployee {
     return url + "api/v1/employees";
   }
 
-  Future getData() async {
+  Future<List<Employees>> getEmployees() async {
     final res = await http.get(getPath());
 
     if (res.statusCode == 200) {
-      // var data = ResponseData.fromJson(jsonDecode(res.body));
-      var data = jsonDecode(res.body);
-      return data['data'];
+      var json = jsonDecode(res.body);
+      List data = json['data'];
+      return data.map((employees) => new Employees.fromJson(employees)).toList();
     } else {
       throw Exception('Failed to fetch data');
     }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 
 import '../../models/model.dart';
 import '../../controllers/network_helper.dart';
@@ -13,52 +12,51 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Future data;
-  // List<Employees> data;
-
-  void callAPI(){
-    data = GetEmployee().getData();
-  }
-  
-  void callJson(){
-
-    var data = {
-      "notes": [
-        {
-          "id": 1,
-          "title": "title1",
-          "desc": "desc1",
-          "todo": ["todo1", "todo2"],
-          "created": "now"
-        },
-        {
-          "id": 2,
-          "title": "title2",
-          "desc": "desc2",
-          "todo": ["todo3", "todo4"],
-          "created": "later"
-        }
-      ]
-    };
-
-    // Notes myNotes = new Notes(1, "title", "desc", ["todo1", "todo2"], "created");
-    List<Notes> myNotes = new List<Notes>.generate(data['notes'].length, (index) => Notes.fromJson(data['notes'][index]));
-    String encodedNotes = jsonEncode(myNotes);
-
-    print(myNotes);
-    print(encodedNotes);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-        // callJson();
-        callAPI();
-      },
-      child: Icon(Icons.add),
-      backgroundColor: Colors.green,
+      appBar: AppBar(
+        title: Text(HomeScreen.title),
+      ),
+      body: Center(
+        child: FutureBuilder<List<Employees>>(
+          future: GetEmployee().getEmployees(),
+          builder: (BuildContext context, AsyncSnapshot<List<Employees>> snapshot){
+            if (snapshot.hasData) {
+              List<Employees> data = snapshot.data;
+              return _employees(data);
+            } else if (snapshot.hasError) {
+              return Text("${snapshot.error}");
+            }
+            return CircularProgressIndicator();
+          },
+        ),
+      )
+    );
+  }
+
+  ListView _employees(data) {
+    return ListView.builder(
+      itemCount: data.length,
+      itemBuilder: (context, index) {
+        return Card(
+          child: _tile(data[index].employeeName, data[index].employeeSalary, Icons.work)
+        );
+      }
+    );
+  }
+
+  ListTile _tile(String title, String subtitle, IconData icon) {
+    return ListTile(
+      title: Text(title,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 20,
+          )),
+      subtitle: Text(subtitle),
+      leading: Icon(
+        icon,
+        color: Colors.blue[500],
       ),
     );
   }
