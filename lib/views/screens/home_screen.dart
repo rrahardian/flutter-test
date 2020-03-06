@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import '../../models/model.dart';
+import '../../controllers/network_helper.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String id = "home_screen";
@@ -12,6 +13,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Future data;
+  // List<Employees> data;
+
+  void callAPI(){
+    data = GetEmployee().getData();
+  }
   
   void callJson(){
 
@@ -47,7 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-        callJson();
+        // callJson();
+        callAPI();
       },
       child: Icon(Icons.add),
       backgroundColor: Colors.green,
